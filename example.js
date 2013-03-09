@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-var httpp = require("./");
+var httppp = require("./");
 
-var parser = new httpp.Parser();
+var parser = new httppp.Parser();
 
 parser.on("headers", function(headers) {
   console.log("========");

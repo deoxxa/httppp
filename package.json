@@ -1,11 +1,11 @@
 {
-  "name": "httpp",
+  "name": "httppp",
   "version": "0.0.1",
   "description": "Deal with only the bits of HTTP you care about. Let the streams flow.",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/deoxxa/httpp.git"
+    "url": "git://github.com/deoxxa/httppp.git"
   },
   "keywords": [
     "http",
