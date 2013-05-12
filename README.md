@@ -50,6 +50,36 @@ Arguments
   parser will try to read before it gives up and emits an error saying that the
   headers were too long.
 
+**#headers**
+
+The "headers" event is emitted when httppp has decided that it's parsed all the
+headers that are going to arrive. Note that this is only emitted once per
+connection, with the implication of that being that you won't know about
+pipelined requests.
+
+The payload for the event is an array containing, in order, the request method,
+the path being requested, and an object containing headers. The object's keys
+are the header names, and the values are arrays containing the values collected
+for that header. The values are arrays because multiple headers with the same
+name may be sent (for example cookies).
+
+```javascript
+parser.on("headers", onHeaders);
+```
+
+```javascript
+parser.on("headers", function onHeaders(info) {
+  // "GET" or similar
+  console.log(info[0]);
+
+  // "/" or something
+  console.log(info[1]);
+
+  // {host: ["127.0.0.1"], cookie: ["a=b", "c=d"]}
+  console.log(info[2]);
+});
+```
+
 Example
 -------
 
