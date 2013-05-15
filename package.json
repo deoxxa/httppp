@@ -1,6 +1,6 @@
 {
   "name": "httppp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Deal with only the bits of HTTP you care about. Let the streams flow.",
   "main": "index.js",
   "engines": {
