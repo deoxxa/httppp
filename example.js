@@ -8,15 +8,7 @@ var server1_port = null,
     server2_port = null;
 
 var proxy = net.createServer(function(socket) {
-  var parser = new httppp.Parser();
-
-  socket.pipe(parser);
-
-  parser.on("error", function() {
-    socket.end();
-  });
-
-  parser.on("headers", function(info) {
+  var parser = httppp(function(info) {
     console.log(new Date(), "proxy headers", info[0], info[1]);
 
     var host = (info[2].host && info[2].host.length) ? info[2].host[0] : null;
@@ -32,6 +24,12 @@ var proxy = net.createServer(function(socket) {
       default: socket.end(); break;
     }
   });
+
+  parser.on("error", function() {
+    socket.end();
+  });
+
+  socket.pipe(parser);
 });
 
 proxy.listen(3000, function() {

@@ -26,6 +26,24 @@ Or via git:
 API
 ---
 
+**httppp**
+
+The actual `module.exports` value (the thing you get when you `require("httppp")`
+is a factory function for creating parsers.
+
+```javascript
+httppp(onHeaders);
+```
+
+```javascript
+var parser = httppp(functon onHeaders(info) { console.log(info); });
+```
+
+Arguments
+
+* _onHeaders_ - this is a function that, if supplied, is attached to `#headers`
+  on the new `Parser` object. See below for information on the `headers` event.
+
 **Parser constructor**
 
 Constructs a new httppp Parser object, optionally supplying some configuration
@@ -95,15 +113,7 @@ var server1_port = null,
     server2_port = null;
 
 var proxy = net.createServer(function(socket) {
-  var parser = new httppp.Parser();
-
-  socket.pipe(parser);
-
-  parser.on("error", function() {
-    socket.end();
-  });
-
-  parser.on("headers", function(info) {
+  var parser = httppp(function(info) {
     console.log(new Date(), "proxy headers", info[0], info[1]);
 
     var host = (info[2].host && info[2].host.length) ? info[2].host[0] : null;
@@ -119,6 +129,12 @@ var proxy = net.createServer(function(socket) {
       default: socket.end(); break;
     }
   });
+
+  parser.on("error", function() {
+    socket.end();
+  });
+
+  socket.pipe(parser);
 });
 
 proxy.listen(3000, function() {
