@@ -1,5 +1,10 @@
-module.exports = function createParser(onHeaders) {
-  var parser = new Parser();
+module.exports = function createParser(options, onHeaders) {
+  if (typeof options === "function") {
+    onHeaders = options;
+    options = {};
+  }
+
+  var parser = new Parser(options);
 
   if (onHeaders) {
     parser.on("headers", onHeaders);

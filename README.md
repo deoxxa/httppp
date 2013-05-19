@@ -32,15 +32,21 @@ The actual `module.exports` value (the thing you get when you `require("httppp")
 is a factory function for creating parsers.
 
 ```javascript
-httppp(onHeaders);
+httppp([options], onHeaders);
 ```
 
 ```javascript
 var parser = httppp(functon onHeaders(info) { console.log(info); });
+
+// OR
+
+var parser = httppp({collapse: true}, functon onHeaders(info) { console.log(info); });
 ```
 
 Arguments
 
+* _options_ - this is an optional argument used as the `options` for
+  instantiating the `Parser` object.
 * _onHeaders_ - this is a function that, if supplied, is attached to `#headers`
   on the new `Parser` object. See below for information on the `headers` event.
 
@@ -63,10 +69,17 @@ var parser = new httppp.Parser({maximumHeaderBytes: 4096});
 
 Arguments
 
-* _options_ - an object specifying configuration parameters. The only available
-  parameter right now is `maximumHeaderBytes`, which controls how many bytes the
-  parser will try to read before it gives up and emits an error saying that the
-  headers were too long.
+* _options_ - an object specifying configuration parameters. See below for options.
+
+Options
+
+* _maximumHeaderBytes_ - this controls how many bytes the parser will try to
+  read before it gives up and emits an error saying that the headers were too
+  long.
+* _collapse_ - this controls how headers are returned. If it is an array, any
+  headers specified in it will be collapsed from an array to a single value,
+  regardless of how many entries there would be in the array. If it is `true`,
+  all headers will be collapsed if there is only one instance of them.
 
 **#headers**
 
@@ -78,7 +91,8 @@ pipelined requests.
 The payload for the event is an object with properties of `method`, `path`, and
 `headers`. `method` and `path` are both strings, and `headers` is an object,
 where the keys are the header names, and the values are arrays containing the
-values collected for that header. The values are arrays because multiple headers
+values collected for that header (unless `collapse` was specified in `options`
+when instantiating the parser). The values are arrays because multiple headers
 with the same name may be sent (for example cookies).
 
 *NOTE: the payload for this event used to be an array, and to maintain
@@ -117,10 +131,10 @@ var server1_port = null,
     server2_port = null;
 
 var proxy = net.createServer(function(socket) {
-  var parser = httppp(function(info) {
+  var parser = httppp({collapse: ["host"]}, function(info) {
     console.log(new Date(), "proxy headers", info.method, info.path);
 
-    var host = (info.headers.host && info.headers.host.length) ? info.headers.host[0] : null;
+    var host = info.headers.host;
 
     // remove port from host header
     if (host) {
