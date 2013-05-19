@@ -79,7 +79,8 @@ Options
 * _collapse_ - this controls how headers are returned. If it is an array, any
   headers specified in it will be collapsed from an array to a single value,
   regardless of how many entries there would be in the array. If it is `true`,
-  all headers will be collapsed if there is only one instance of them.
+  all headers will be collapsed if there is only one instance of them. By
+  default, this is set to `["host", "user-agent"]`.
 
 **#headers**
 
