@@ -75,11 +75,15 @@ headers that are going to arrive. Note that this is only emitted once per
 connection, with the implication of that being that you won't know about
 pipelined requests.
 
-The payload for the event is an array containing, in order, the request method,
-the path being requested, and an object containing headers. The object's keys
-are the header names, and the values are arrays containing the values collected
-for that header. The values are arrays because multiple headers with the same
-name may be sent (for example cookies).
+The payload for the event is an object with properties of `method`, `path`, and
+`headers`. `method` and `path` are both strings, and `headers` is an object,
+where the keys are the header names, and the values are arrays containing the
+values collected for that header. The values are arrays because multiple headers
+with the same name may be sent (for example cookies).
+
+*NOTE: the payload for this event used to be an array, and to maintain
+compatibility with code that's still expecting that, the properties of the
+payload are aliased as `method` -> `0`, `path` -> `1` and `headers` -> `2`.*
 
 ```javascript
 parser.on("headers", onHeaders);
@@ -88,13 +92,13 @@ parser.on("headers", onHeaders);
 ```javascript
 parser.on("headers", function onHeaders(info) {
   // "GET" or similar
-  console.log(info[0]);
+  console.log(info.method);
 
   // "/" or something
-  console.log(info[1]);
+  console.log(info.path);
 
   // {host: ["127.0.0.1"], cookie: ["a=b", "c=d"]}
-  console.log(info[2]);
+  console.log(info.headers);
 });
 ```
 
@@ -114,9 +118,9 @@ var server1_port = null,
 
 var proxy = net.createServer(function(socket) {
   var parser = httppp(function(info) {
-    console.log(new Date(), "proxy headers", info[0], info[1]);
+    console.log(new Date(), "proxy headers", info.method, info.path);
 
-    var host = (info[2].host && info[2].host.length) ? info[2].host[0] : null;
+    var host = (info.headers.host && info.headers.host.length) ? info.headers.host[0] : null;
 
     // remove port from host header
     if (host) {

@@ -9,9 +9,9 @@ var server1_port = null,
 
 var proxy = net.createServer(function(socket) {
   var parser = httppp(function(info) {
-    console.log(new Date(), "proxy headers", info[0], info[1]);
+    console.log(new Date(), "proxy headers", info.method, info.path);
 
-    var host = (info[2].host && info[2].host.length) ? info[2].host[0] : null;
+    var host = (info.headers.host && info.headers.host.length) ? info.headers.host[0] : null;
 
     // remove port from host header
     if (host) {
